@@ -117,7 +117,7 @@ func (r *Repository) GetUsersChats(userId int) ([]entities.ChatsToUsers, error) 
 			LEFT JOIN users u
 			ON uc.user_id = u.id
 			WHERE c.name in (%s)
-			ORDER BY c.name
+			ORDER BY uc.last_time
 		`,
 		strings.Join(inParams, ","),
 	)
@@ -172,6 +172,22 @@ func (r *Repository) AddMessageToUser(message *entities.Message, userId int) err
 	)
 	if err := tx.Commit(); err != nil {
 		return errors.Wrap(err, "insert message to user")
+	}
+	return nil
+}
+
+func (r *Repository) UpdateChatLastSession(chatId, userId int) error {
+	tx := r.db.MustBegin()
+	tx.MustExec(
+		`
+			UPDATE users_to_chats 
+			SET last_time = NOW()
+			where user_id = $1 and chat_id = $2
+		`,
+		userId, chatId,
+	)
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "update last_time")
 	}
 	return nil
 }

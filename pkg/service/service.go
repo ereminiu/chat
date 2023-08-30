@@ -74,6 +74,10 @@ func (s *Serivce) AddMessageToUser(message *entities.Message, userId int) error 
 	return s.repos.AddMessageToUser(message, userId)
 }
 
+func (s *Serivce) UpdateChatLastSession(chatId, userId int) error {
+	return s.repos.UpdateChatLastSession(chatId, userId)
+}
+
 func (s *Serivce) GetMessagesByChat(chatId int) ([]models.Message, error) {
 	return s.repos.GetMessagesByChat(chatId)
 }

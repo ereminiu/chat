@@ -126,6 +126,7 @@ func (h *Handler) GetUsersChats(c *gin.Context) {
 	})
 }
 
+// TODO: переделать - слишком много кода. Разбить на блоки
 func (h *Handler) SendMessage(c *gin.Context) {
 	var input inputs.Message
 	if err := c.BindJSON(&input); err != nil {
@@ -170,6 +171,9 @@ func (h *Handler) SendMessage(c *gin.Context) {
 		return
 	}
 	if err = h.s.AddMessageToUser(&message, userId); err != nil {
+		log.Fatal(err)
+	}
+	if err := h.s.UpdateChatLastSession(chatId, userId); err != nil {
 		log.Fatal(err)
 	}
 	c.JSON(200, gin.H{
